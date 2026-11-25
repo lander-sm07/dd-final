@@ -61,7 +61,7 @@ async function discord(content, embeds) {
   if (!r.ok) throw new Error(`Discord ${r.status}: ${await r.text()}`);
 }
 const COLORS = { overdue: 0xff6b81, today: 0xff8e7a, soon: 0xffad5c, info: 0x6cc4ff, ok: 0x4fd1a5 };
-const icon = (t) => (t.kind === "exam" ? "🎓" : t.kind === "todo" ? "☑️" : "📄");
+const icon = (t) => (t.kind === "exam" ? "📝" : t.kind === "todo" ? "☑️" : "📄");
 const line = (t, showDate) => `${icon(t)} **${t.title}**${t.course ? ` · ${t.course}` : ""}${showDate ? ` · ${nice(t.due_date)}` : ""}${t.due_time ? ` · ${t.due_time.slice(0, 5)}` : ""}${t.status === "working" ? " · _in progress_" : ""}`;
 const section = (name, list, color, showDate = false) => list.length ? [{ title: name, description: list.map((t) => line(t, showDate)).join("\n").slice(0, 4000), color }] : [];
 
@@ -88,7 +88,7 @@ if (FORCE || (hour >= MORNING[0] && hour < MORNING[1] && (await getMeta("last_di
     ...section("📌 Due today", dueToday, COLORS.today),
     ...section("⏭️ Due tomorrow", dueTomorrow, COLORS.soon),
     ...section("🗓️ Next few days", soon, COLORS.info, true),
-    ...section("🎓 Exams this week", exams, COLORS.info, true),
+    ...section("📚 Exams this week", exams, COLORS.info, true),
   ];
   const weekday = new Date(today + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "long", timeZone: "UTC" });
   if (!embeds.length) embeds.push({ description: "Nothing due in the next few days. Enjoy it! 🎉", color: COLORS.ok });

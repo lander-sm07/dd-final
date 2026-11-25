@@ -55,3 +55,8 @@ drop policy if exists "own notes"   on notes;
 create policy "own courses" on courses for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "own tasks"   on tasks   for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "own notes"   on notes   for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- Newer Supabase projects don't give the website access to new tables automatically.
+grant usage on schema public to authenticated, service_role;
+grant select, insert, update, delete on courses, tasks, notes to authenticated;
+grant all on courses, tasks, notes, meta to service_role;
