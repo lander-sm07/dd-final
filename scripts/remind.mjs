@@ -36,7 +36,7 @@ const dayDiff = (a, b) => Math.round((Date.parse(a + "T12:00:00Z") - Date.parse(
 const nice = (ymd) => new Date(ymd + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 
 // ── Supabase REST ──
-const headers = { apikey: SUPABASE_SERVICE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`, "Content-Type": "application/json" };
+const headers = { apikey: SUPABASE_SERVICE_KEY, "Content-Type": "application/json", ...(SUPABASE_SERVICE_KEY.startsWith("sb_") ? {} : { Authorization: `Bearer ${SUPABASE_SERVICE_KEY}` }) };
 async function sb(path, opts = {}) {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: { ...headers, ...opts.headers }, ...opts });
   if (!r.ok) throw new Error(`Supabase ${r.status}: ${await r.text()}`);
