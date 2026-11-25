@@ -1,0 +1,9 @@
+{
+  "name": "Deadlines",
+  "short_name": "Deadlines",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#060a15",
+  "theme_color": "#060a15",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
