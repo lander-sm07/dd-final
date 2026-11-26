@@ -23,6 +23,9 @@ class LocalStore {
         ],
       };
     }
+    data.study ||= [];
+    data.settings ||= {};
+    data.canvas ||= [];
     this.data = data;
     this.save();
   }
@@ -44,6 +47,16 @@ class LocalStore {
   async getNotes() { return structuredClone(this.data.notes); }
   async addNote(text) { const n = { id: uid(), text, created_at: new Date().toISOString() }; this.data.notes.push(n); this.save(); return n; }
   async deleteNote(id) { this.data.notes = this.data.notes.filter((x) => x.id !== id); this.save(); }
+  async getStudy() { return structuredClone(this.data.study); }
+  async saveStudy(b) {
+    if (b.id) { const x = this.data.study.find((y) => y.id === b.id); Object.assign(x, b); this.save(); return x; }
+    const row = { id: uid(), done: false, created_at: new Date().toISOString(), ...b }; this.data.study.push(row); this.save(); return row;
+  }
+  async deleteStudy(id) { this.data.study = this.data.study.filter((x) => x.id !== id); this.save(); }
+  async getSettings() { return { ...this.data.settings }; }
+  async setSetting(key, value) { this.data.settings[key] = value; this.save(); }
+  async getCanvas() { return structuredClone(this.data.canvas); }
+  async updateCanvas(uidv, patch) { const x = this.data.canvas.find((y) => y.uid === uidv); Object.assign(x, patch); this.save(); return x; }
   resetDemo() { localStorage.removeItem(this.key); }
 }
 
@@ -74,6 +87,19 @@ class SupabaseStore {
   async getNotes() { return this.check(await this.sb.from("notes").select("*").order("created_at")); }
   async addNote(text) { return this.check(await this.sb.from("notes").insert({ text }).select().single()); }
   async deleteNote(id) { this.check(await this.sb.from("notes").delete().eq("id", id)); }
+  // v2 tables: if they don't exist yet (SQL not run), return empty instead of breaking the site
+  async soft(q, fallback) { const { data, error } = await q; if (error) { console.warn(error.message); this.missing = true; return fallback; } return data; }
+  async getStudy() { return this.soft(this.sb.from("study_plan").select("*").order("date"), []); }
+  async saveStudy(b) {
+    const { id, user_id, created_at, ...f } = b;
+    if (id) return this.check(await this.sb.from("study_plan").update(f).eq("id", id).select().single());
+    return this.check(await this.sb.from("study_plan").insert(f).select().single());
+  }
+  async deleteStudy(id) { this.check(await this.sb.from("study_plan").delete().eq("id", id)); }
+  async getSettings() { const rows = await this.soft(this.sb.from("settings").select("key,value"), []); return Object.fromEntries(rows.map((r) => [r.key, r.value])); }
+  async setSetting(key, value) { this.check(await this.sb.from("settings").upsert({ key, value }, { onConflict: "user_id,key" })); }
+  async getCanvas() { return this.soft(this.sb.from("canvas_items").select("*").order("due_at", { ascending: true, nullsFirst: false }), []); }
+  async updateCanvas(uidv, patch) { return this.check(await this.sb.from("canvas_items").update(patch).eq("uid", uidv).select().single()); }
 }
 
 export async function createStore() {

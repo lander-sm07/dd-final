@@ -19,7 +19,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node scripts/remind.mjs
+      - name: Discord reminders
+        run: node scripts/remind.mjs
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -27,3 +28,10 @@ jobs:
           DISCORD_USER_ID: ${{ secrets.DISCORD_USER_ID }}
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
           FORCE_DIGEST: ${{ inputs.force_digest }}
+      - name: Sync Canvas feed
+        if: always()
+        run: node scripts/canvas.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CANVAS_ICS_URL: ${{ secrets.CANVAS_ICS_URL }}

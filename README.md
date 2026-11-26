@@ -5,6 +5,7 @@ A clean dashboard for all your deadlines, exams and to-dos, with reminders on yo
 **What you get**
 - **Dashboard** with a calendar, the next 7 days, a "next up" countdown, to-dos, a focus timer, quick notes and course links
 - **Quick add**: type `SKIL report friday 23:59` and it works out the course, day and time
+- **Calendar** page (click a day to add something), **Exam planner**, **New on Canvas** tab, weather for Nijlen, light and dark mode
 - **Discord reminders**:
   - ☀️ 08:00 overview: overdue, today, tomorrow, next few days, and exams this week
   - 🌙 19:00 heads-up for everything due tomorrow
@@ -65,6 +66,10 @@ A clean dashboard for all your deadlines, exams and to-dos, with reminders on yo
 - Open your dashboard and add it to your home screen. On iPhone: Safari → Share → **Add to Home Screen**. On Android: Chrome → ⋮ → **Add to Home screen**. It then opens full-screen like an app.
 
 ---
+
+## Version 2 extras (exam planner + Canvas)
+1. In Supabase, open **SQL Editor**, paste `supabase/002_v2.sql` and click **Run**.
+2. For the **New on Canvas** tab: in Canvas go to **Calendar → Calendar Feed**, copy the link and add it on GitHub as the secret `CANVAS_ICS_URL`. The hourly job then reads your Canvas assignments. The first run just takes note of what's already there; after that, new assignments show up in the tab (no Discord messages).
 
 ## Using it
 - **Add something:** type in the bar at the top and press Enter. It understands:
